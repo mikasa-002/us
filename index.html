@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Couple Countdown</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #ff9a9e, #fad0c4);
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            text-align: center;
+            position: relative;
+            padding: 20px;
+        }
+        .floating-emojis {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        .emoji {
+            position: absolute;
+            font-size: 2em;
+            opacity: 0.8;
+            animation: floatUp 5s infinite linear;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0.5); opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+        }
+        .container {
+            color: #ff4081;
+            font-size: 1.8em;
+            font-weight: bold;
+            z-index: 10;
+            padding: 20px;
+        }
+        .countdown {
+            font-size: 2.5em;
+            margin-top: 10px;
+        }
+        .miss-you-container {
+            position: relative;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+        }
+        .miss-you {
+            text-align: center;
+        }
+        .miss-you button {
+            background-color: #ff4081;
+            color: white;
+            font-size: 1.2em;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .miss-you button:hover {
+            background-color: #e6005c;
+        }
+        .miss-counter {
+            margin-top: 10px;
+            font-size: 1.2em;
+            color: #ff4081;
+        }
+        @media (max-width: 768px) {
+            .container {
+                font-size: 1.5em;
+            }
+            .countdown {
+                font-size: 2em;
+            }
+            .miss-you button {
+                font-size: 1em;
+                padding: 8px 16px;
+            }
+            .miss-counter {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-emojis"></div>
+    <div class="container">
+        <h1>Time Until We Meet ❤️</h1>
+        <div class="countdown" id="countdown"></div>
+    </div>
+    <div class="miss-you-container">
+        <div class="miss-you">
+            <button onclick="increaseMissCount('left')">Miss You ❤️</button>
+            <div class="miss-counter" id="missCounterLeft">Misses: 0</div>
+        </div>
+        <div class="miss-you">
+            <button onclick="increaseMissCount('right')">Miss You ❤️</button>
+            <div class="miss-counter" id="missCounterRight">Misses: 0</div>
+        </div>
+    </div>
+    <script>
+        let missCountLeft = localStorage.getItem("missCountLeft") ? parseInt(localStorage.getItem("missCountLeft")) : 0;
+        let missCountRight = localStorage.getItem("missCountRight") ? parseInt(localStorage.getItem("missCountRight")) : 0;
+
+        document.getElementById("missCounterLeft").innerHTML = `Misses: ${missCountLeft}`;
+        document.getElementById("missCounterRight").innerHTML = `Misses: ${missCountRight}`;
+
+        function updateCountdown() {
+            const targetDate = new Date("March 17, 2025 10:00:00").getTime();
+            setInterval(() => {
+                const now = new Date().getTime();
+                const distance = targetDate - now;
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                document.getElementById("countdown").innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+            }, 1000);
+        }
+        
+        function createFloatingEmojis() {
+            const emojis = ["❤️", "💖", "💕", "💞", "💓", "💗", "🎀", "🤍"];
+            for (let i = 0; i < 20; i++) {
+                const emoji = document.createElement("div");
+                emoji.classList.add("emoji");
+                emoji.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+                document.querySelector(".floating-emojis").appendChild(emoji);
+                
+                emoji.style.fontSize = Math.random() * 2 + 1 + "em";
+                emoji.style.left = Math.random() * 100 + "vw";
+                emoji.style.animationDuration = Math.random() * 5 + 3 + "s";
+                setTimeout(() => emoji.remove(), 5000);
+            }
+        }
+
+        function increaseMissCount(side) {
+            if (side === 'left') {
+                missCountLeft++;
+                localStorage.setItem("missCountLeft", missCountLeft);
+                document.getElementById("missCounterLeft").innerHTML = `Misses: ${missCountLeft}`;
+            } else {
+                missCountRight++;
+                localStorage.setItem("missCountRight", missCountRight);
+                document.getElementById("missCounterRight").innerHTML = `Misses: ${missCountRight}`;
+            }
+        }
+        
+        updateCountdown();
+        setInterval(createFloatingEmojis, 1000);
+    </script>
+</body>
+</html>
